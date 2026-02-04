@@ -55,11 +55,8 @@ cd AI-Operations-Assistant
 
 ### 2. Create and activate virtual environment in Your Local Computer
 python -m venv venv
-
-Then Activate the Virtual Environment:
+### Then Activate the Virtual Environment:
 venv\Scripts\Activate.ps1
-
-The venv/ directory should NOT be committed to GitHub.
 
 ### 3. Install dependencies
 pip install -r requirements.txt
@@ -72,7 +69,7 @@ OPENAI_API_KEY=your_openai_api_key
 GITHUB_TOKEN=your_github_token
 OPENWEATHER_API_KEY=your_openweather_api_key
 
-Note:
+###Note:
 >> MOCK_LLM=true → Uses mock LLM (recommended for evaluation)
 >> MOCK_LLM=false → Uses real OpenAI API (Not using as OpenAi Quota can be a problem for general users)
 
@@ -81,36 +78,32 @@ Note:
 ### 5. Start the server
 uvicorn main:app --reload
 
-The API will be available at:
+### The API will be available at:
 http://127.0.0.1:8000
 
-Interactive API docs:
+### Interactive API docs:
 http://127.0.0.1:8000/docs
 
 ###API Usage:
 POST /run : Executes a task using the agent pipeline
 
-(After Clicking the API docs link => Click on "POST/run" => Click "Try it out")
+### After clicking the API docs link => Click on "POST/run" => Click "Try it out"
 
-Request Body:
-
+###Request Body:
 {
   "task": "Search GitHub for AI projects and check the weather in Berlin"
 }
 
 
 ---
-Response Includes:
-
+### Response Includes:
 Generated execution plan
-
 Tool execution results
-
 Final verified response
 
 
 
-Notes
+### Notes
 External API keys are optional when running in mock mode.
 Missing or invalid API keys are handled gracefully.
 The project is fully functional and ready for evaluation.
@@ -118,7 +111,6 @@ The project is fully functional and ready for evaluation.
 ---
 
 ## How the Project Works (Internal Flow)
-
 
 This project follows an "agent-based execution pipeline" where a user request is processed in multiple clearly separated stages. Each stage has a single responsibility, making the system easy to understand, debug, and extend.
 
