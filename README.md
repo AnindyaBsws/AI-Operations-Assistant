@@ -53,8 +53,10 @@ AI-Operations-Assistant/
 git clone https://github.com/AnindyaBsws/AI-Operations-Assistant.git
 cd AI-Operations-Assistant
 
-### 2. Create and activate virtual environment
+### 2. Create and activate virtual environment in Your Local Computer
 python -m venv venv
+
+Then Activate the Virtual Environment:
 venv\Scripts\Activate.ps1
 
 The venv/ directory should NOT be committed to GitHub.
