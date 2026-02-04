@@ -1,197 +1,265 @@
-# AI Operations Assistant
+AI Operations Assistant
 
-An agent-based AI Operations Assistant built with **FastAPI**, showcasing 
-how a Large Language Model (LLM) can **plan tasks**, **execute tools**, and
-**verify results** using a clean, modular architecture.
+A Multi-Agent AI System for Executing Natural Language Tasks
 
----
+Overview
 
-## Features
+AI Operations Assistant is an agentic AI system that transforms natural language instructions into structured execution plans, invokes real-world APIs to gather data, and verifies the results before presenting a final, human-readable response.
 
-- Agent pipeline: **Planner → Executor → Verifier**
-- Structured JSON-based task planning
-- Tool execution (GitHub search, Weather check)
-- FastAPI REST backend
-- **Mock LLM mode** for quota-free, deterministic execution
-- Environment-based configuration
-- Graceful handling of external API failures
+The project demonstrates how multiple AI agents can collaborate to solve real tasks end-to-end, combining LLM-based reasoning with external tool execution and robust error handling.
 
----
+The application runs locally on localhost and is designed so that anyone can set it up and run it by following this README.
 
-## Example Prompts
+How the System Works
 
-You can test the system using the following example tasks:
+At a high level, the system follows a three-stage pipeline:
 
-1. "Find the top AI repositories on GitHub and show the current weather in Berlin."
-2. "Get the weather in New York and list trending Python repositories."
-3. "Find recent AI-related news and popular GitHub repositories."
-4. "Check the weather in London and summarize today’s technology news."
-5. "Find open-source LLM projects and current weather in San Francisco."
+Plan – Understand the user’s intent and create a structured plan
 
---- 
+Execute – Call external APIs based on that plan
 
-## Architecture
-User Task
-↓
-PlannerAgent → JSON Plan
-↓
-ExecutorAgent → Tool Results
-↓
-VerifierAgent → Final Answer
+Verify – Interpret results, handle errors, and generate the final answer
 
----
+This separation ensures clarity, reliability, and extensibility.
 
-## Project Structure
-AI-Operations-Assistant/
-├── agents/
-│ ├── planner.py
-│ ├── executor.py
-│ └── verifier.py
-├── tools/
-│ ├── github_tool.py
-│ └── weather_tool.py
-├── llm/
-│ └── openai_client.py
-├── main.py
-├── requirements.txt
-├── .env.example
-├── .gitignore
-└── README.md
+Architecture
+Agents
+1. Planner Agent
 
----
+The Planner Agent converts a natural language task into a structured JSON plan.
+It uses an LLM to reason about what needs to be done, not how to do it.
 
-## Run Locally (End-to-End)
+Example plan output:
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/AnindyaBsws/AI-Operations-Assistant.git
-cd AI-Operations-Assistant
-
-### 2. Create and activate virtual environment in Your Local Computer
-python -m venv venv
-### Then Activate the Virtual Environment:
-venv\Scripts\Activate.ps1
-
-### 3. Install dependencies
-pip install -r requirements.txt
-
-### 4. Configure environment variables
-Create a .env file using .env.example:
-
-MOCK_LLM=true  
-OPENAI_API_KEY=your_openai_api_key
-GITHUB_TOKEN=your_github_token
-OPENWEATHER_API_KEY=your_openweather_api_key
-
-###Note:
->> MOCK_LLM=true → Uses mock LLM (recommended for evaluation)
->> MOCK_LLM=false → Uses real OpenAI API (Not using as OpenAi
-Quota can be a problem for general users)
-
-
-
-### 5. Start the server
-uvicorn main:app --reload
-
-### The API will be available at:
-http://127.0.0.1:8000
-
-### Interactive API docs:
-http://127.0.0.1:8000/docs
-
-###API Usage:
-POST /run : Executes a task using the agent pipeline
-
-### After clicking the API docs link => Click on "POST/run" => Click "Try it out"
-
-###Request Body:
-{
-  "task": "Search GitHub for AI projects and check the weather in Berlin"
-}
-
-
----
-### Response Includes:
-Generated execution plan
-Tool execution results
-Final verified response
-
-
-
-### Notes
-External API keys are optional when running in mock mode.
-Missing or invalid API keys are handled gracefully.
-The project is fully functional and ready for evaluation.
-
----
-
-## How the Project Works (Internal Flow)
-
-This project follows an "agent-based execution pipeline" where a user request
-is processed in multiple clearly separated stages. Each stage has a single
-responsibility, making the system easy to understand, debug, and extend.
-
-### 1. Request Entry
-The user sends a task to the backend via the `POST /run` endpoint.  
-Example task:
-
-"Search GitHub for AI projects and check the weather in Berlin"
-This task acts as the high-level goal for the system.
-
----
-
-### 2. Planning Phase (PlannerAgent)
-The **PlannerAgent** is responsible for interpreting the user task and
-converting it into a **structured JSON execution plan**.
-
-- The planner calls the LLM layer (`openai_client.py`)
-- The LLM returns a JSON object describing:
-  - Which actions to perform
-  - The order of execution
-  - Parameters required for each action
-
-Example plan:
-```json
 {
   "steps": [
     {
       "action": "github_search",
-      "parameters": { "query": "AI" }
+      "parameters": {
+        "query": "AI"
+      }
     },
     {
       "action": "weather_check",
-      "parameters": { "city": "Berlin" }
+      "parameters": {
+        "city": "Berlin"
+      }
     }
   ]
 }
 
->> When MOCK_LLM=true, this plan is returned from a deterministic mock response instead of calling OpenAI.
+2. Executor Agent
 
-### 3. Execution Phase (ExecutorAgent)
--The ExecutorAgent receives the JSON plan and executes each step sequentially.
--> Each action is mapped to a specific tool
--> Tools are implemented as independent modules (e.g., GitHub tool, Weather tool)
--> External API calls are made only at this stage
--> Errors such as invalid API keys or authorization failures are        captured and returned as structured results
--> This separation ensures that planning logic is never mixed with execution logic.
+The Executor Agent takes the structured plan and performs each step using real tools:
 
-### 4. Verification Phase (VerifierAgent)
--> The VerifierAgent processes the raw tool outputs and prepares the final response.
--> Validates execution results
--> Normalizes errors and successful outputs
--> Ensures the final response is consistent and readable
--> This stage prevents partial failures from crashing the application.
+Calls external APIs
 
-### 5. Final Response
--> The backend returns a structured response containing:
--> The generated execution plan
--> Results from each executed tool
--> The final verified output
--> The application always responds gracefully, even if some external APIs fail.
+Collects raw responses or errors
 
-## Design Rationale
--> Agent separation improves maintainability and testability
--> Mock LLM mode enables reproducible evaluation without API quotas
--> Tool abstraction allows easy addition of new capabilities
--> Environment-based configuration makes the system deployment-ready
--> This design closely mirrors real-world AI Ops and agent orchestration systems.
+Never uses the LLM directly
+
+3. Verifier Agent
+
+The Verifier Agent:
+
+Validates execution results
+
+Handles partial failures gracefully
+
+Produces a clean, human-readable final answer
+
+Explains what succeeded, what failed, and why
+
+Integrated Third-Party APIs
+
+The system integrates real external APIs (separate from the LLM provider):
+
+GitHub REST API
+
+Used to search repositories and retrieve metadata such as stars and descriptions.
+
+Endpoint:
+
+https://api.github.com/search/repositories
+
+
+Authentication:
+
+Optional
+
+Works without a token (lower rate limit)
+
+Token can be provided via environment variable
+
+Open-Meteo Weather API
+
+Used to fetch current weather information.
+
+Key features:
+
+No API key required
+
+No quota limitations
+
+Live weather data
+
+Endpoint:
+
+https://api.open-meteo.com/v1/forecast
+
+
+Note
+The OpenAI API is used only for reasoning and planning.
+It is not counted as a third-party data API.
+
+Example Prompts (3–5)
+
+You can test the system using prompts such as:
+
+Find the top AI repositories on GitHub and show the current weather in Berlin.
+
+Get the current weather in London and list popular AI repositories.
+
+Find trending AI repositories and check the weather in New York.
+
+Show today’s weather in Berlin and retrieve top open-source AI projects.
+
+Find AI-related GitHub repositories and report the weather in San Francisco.
+
+Running the Project Locally
+Prerequisites
+
+Python 3.10 or 3.11
+
+pip
+
+Internet connection
+
+Step 1: Clone the Repository
+git clone <your-repository-url>
+cd AI-Operations-Assistant
+
+Step 2: Create and Activate a Virtual Environment
+python -m venv venv
+
+
+Windows
+
+venv\Scripts\activate
+
+
+macOS / Linux
+
+source venv/bin/activate
+
+Step 3: Install Dependencies
+pip install -r requirements.txt
+
+Environment Variables
+.env.example
+OPENAI_API_KEY=your_openai_key_here
+GITHUB_TOKEN=your_github_token_here
+MOCK_LLM=true
+
+Create Your .env File
+cp .env.example .env
+
+
+Edit the file and set values as needed.
+
+.env is intentionally excluded from version control.
+
+Running the Application
+
+Start the application with one command:
+
+uvicorn main:app --reload
+
+
+The server will be available at:
+
+http://127.0.0.1:8000
+
+
+API documentation (Swagger UI):
+
+http://127.0.0.1:8000/docs
+
+Sample Output (Partial Success)
+{
+  "final_answer": "The current weather in Berlin is -4.5°C with a wind speed of 13.4 km/h. Fetching top AI repositories from GitHub failed due to invalid or missing GitHub API credentials."
+}
+
+
+This demonstrates:
+
+Real API calls
+
+Partial success handling
+
+Clear, user-friendly explanations
+
+Error Handling Strategy
+
+External API failures are caught safely
+
+Partial results are returned when available
+
+The system never crashes due to API errors
+
+The Verifier Agent explains failures clearly
+
+MOCK_LLM Mode
+
+The system supports a mock mode for evaluation and quota-free execution.
+
+MOCK_LLM=true
+
+
+In this mode:
+
+Planner returns a deterministic structured plan
+
+Verifier returns a deterministic explanation
+
+Executor can still call real APIs
+
+This ensures the entire agentic workflow can be demonstrated without requiring paid LLM access.
+
+Known Limitations & Tradeoffs
+
+GitHub API may return authentication errors without a token
+
+LLM usage depends on available OpenAI quota when mock mode is disabled
+
+API calls are executed sequentially
+
+No long-term memory across requests
+
+Possible Improvements With More Time
+
+Parallel execution of independent tools
+
+Persistent memory between requests
+
+Tool response caching
+
+Cost and latency tracking
+
+Frontend UI for non-technical users
+
+Conclusion
+
+This project demonstrates a production-style agentic AI workflow with:
+
+Multi-agent architecture
+
+Structured LLM reasoning
+
+Real third-party API integration
+
+Robust error handling
+
+Clean end-to-end execution
+
+It fully satisfies the assignment requirements and is designed to be easily extended with additional agents and tools.
