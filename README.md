@@ -1,6 +1,8 @@
 # AI Operations Assistant
 
-An agent-based AI Operations Assistant built with **FastAPI**, showcasing how a Large Language Model (LLM) can **plan tasks**, **execute tools**, and **verify results** using a clean, modular architecture.
+An agent-based AI Operations Assistant built with **FastAPI**, showcasing 
+how a Large Language Model (LLM) can **plan tasks**, **execute tools**, and
+**verify results** using a clean, modular architecture.
 
 ---
 
@@ -71,7 +73,8 @@ OPENWEATHER_API_KEY=your_openweather_api_key
 
 ###Note:
 >> MOCK_LLM=true → Uses mock LLM (recommended for evaluation)
->> MOCK_LLM=false → Uses real OpenAI API (Not using as OpenAi Quota can be a problem for general users)
+>> MOCK_LLM=false → Uses real OpenAI API (Not using as OpenAi
+Quota can be a problem for general users)
 
 
 
@@ -112,7 +115,9 @@ The project is fully functional and ready for evaluation.
 
 ## How the Project Works (Internal Flow)
 
-This project follows an "agent-based execution pipeline" where a user request is processed in multiple clearly separated stages. Each stage has a single responsibility, making the system easy to understand, debug, and extend.
+This project follows an "agent-based execution pipeline" where a user request
+is processed in multiple clearly separated stages. Each stage has a single
+responsibility, making the system easy to understand, debug, and extend.
 
 ### 1. Request Entry
 The user sends a task to the backend via the `POST /run` endpoint.  
@@ -124,7 +129,8 @@ This task acts as the high-level goal for the system.
 ---
 
 ### 2. Planning Phase (PlannerAgent)
-The **PlannerAgent** is responsible for interpreting the user task and converting it into a **structured JSON execution plan**.
+The **PlannerAgent** is responsible for interpreting the user task and
+converting it into a **structured JSON execution plan**.
 
 - The planner calls the LLM layer (`openai_client.py`)
 - The LLM returns a JSON object describing:
