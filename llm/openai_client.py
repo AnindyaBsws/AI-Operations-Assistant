@@ -1,22 +1,16 @@
 import os
 from openai import OpenAI
-from openai import OpenAIError
 
-
-def call_llm(prompt: str) -> str:
+def call_llm(prompt: str, mode: str = "planner") -> str:
     """
-    Calls the LLM to generate a response.
-
-    If MOCK_LLM=true is set in the environment,
-    a deterministic mock response is returned
-    (useful for evaluation, demos, and avoiding API quota issues).
+    mode:
+      - planner
+      - verifier
     """
 
-    # ----------------------------
-    # MOCK MODE (No OpenAI calls)
-    # ----------------------------
     if os.getenv("MOCK_LLM", "").lower() == "true":
-        return """
+        if mode == "planner":
+            return """
 {
   "steps": [
     {
@@ -35,37 +29,19 @@ def call_llm(prompt: str) -> str:
 }
 """.strip()
 
-    # ----------------------------
-    # REAL OPENAI CALL
-    # ----------------------------
-    api_key = os.getenv("OPENAI_API_KEY")
+        if mode == "verifier":
+            return (
+                "I attempted to retrieve the top AI repositories from GitHub and the "
+                "current weather in Berlin. However, both requests failed due to invalid "
+                "or missing API credentials. Please ensure valid GITHUB_TOKEN and "
+                "WEATHER_API_KEY values are set in the .env file and try again."
+            )
 
-    if not api_key:
-        raise RuntimeError(
-            "OPENAI_API_KEY is not set. "
-            "Set it in the .env file or environment variables."
-        )
-
-    try:
-        client = OpenAI(api_key=api_key)
-
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a precise planning agent. Output only valid JSON."
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            temperature=0
-        )
-
-        return response.choices[0].message.content
-
-    except OpenAIError as e:
-        # Graceful failure instead of crashing the whole app
-        raise RuntimeError(f"OpenAI API error: {str(e)}") from e
+    # ---- REAL LLM ----
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0
+    )
+    return response.choices[0].message.content

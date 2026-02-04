@@ -18,6 +18,18 @@ how a Large Language Model (LLM) can **plan tasks**, **execute tools**, and
 
 ---
 
+## Example Prompts
+
+You can test the system using the following example tasks:
+
+1. "Find the top AI repositories on GitHub and show the current weather in Berlin."
+2. "Get the weather in New York and list trending Python repositories."
+3. "Find recent AI-related news and popular GitHub repositories."
+4. "Check the weather in London and summarize today’s technology news."
+5. "Find open-source LLM projects and current weather in San Francisco."
+
+--- 
+
 ## Architecture
 User Task
 ↓

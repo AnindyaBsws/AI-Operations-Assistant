@@ -4,11 +4,22 @@ class VerifierAgent:
     def verify(self, task: str, results: list):
         prompt = f"""
 You are a Verifier Agent.
-Check if the results satisfy the task.
 
-Task: {task}
-Results: {results}
+Your responsibilities:
+- Interpret the tool results.
+- Detect failures or missing data.
+- Explain the outcome in plain English.
+- Do NOT repeat the plan.
+- Do NOT output JSON.
+- Do NOT output raw API responses.
 
-Respond with a clean, structured summary.
+Task:
+{task}
+
+Tool Results:
+{results}
+
+Return ONLY a clear, human-readable explanation.
 """
-        return call_llm(prompt)
+
+        return call_llm(prompt, mode="verifier")

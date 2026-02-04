@@ -19,5 +19,5 @@ Output strictly in JSON:
   ]
 }}
 """
-        response = call_llm(prompt)
+        response = call_llm(prompt, mode="planner")
         return json.loads(response)
