@@ -142,7 +142,7 @@ You can test the system using prompts such as:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/AnindyaBsws/AI-Operations-Assistant.git
 cd AI-Operations-Assistant
 ```
 
@@ -264,17 +264,7 @@ This allows the full agentic workflow to be demonstrated without paid LLM access
 - GitHub API may return authentication errors without a token  
 - LLM usage depends on available OpenAI quota when mock mode is disabled  
 - API calls are executed sequentially  
-- No long-term memory across requests  
-
----
-
-## Possible Improvements
-
-- Parallel execution of independent tools  
-- Persistent memory between requests  
-- Tool response caching  
-- Cost and latency tracking  
-- Frontend UI for non-technical users  
+- No long-term memory across requests   
 
 ---
 
